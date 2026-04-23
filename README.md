@@ -1,2 +1,2 @@
 # php-api
-A repo for with different resources, all built with PHP.
+A repo with different resources, all built with PHP.
