@@ -1,0 +1,181 @@
+# =====================================================
+# OS FILES
+# =====================================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =====================================================
+# IDE / EDITOR FILES
+# =====================================================
+
+# IntelliJ / JetBrains
+.idea/
+*.iml
+out/
+
+# VS Code
+.vscode/
+.history/
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# =====================================================
+# LOGS
+# =====================================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =====================================================
+# ENVIRONMENT / SECRETS
+# =====================================================
+.env
+.env.*
+!.env.example
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
+
+# Keys / secrets
+*.pem
+*.key
+*.crt
+*.p12
+
+# =====================================================
+# ARCHIVES
+# =====================================================
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# =====================================================
+# TEMP FILES
+# =====================================================
+*.tmp
+*.temp
+*.swp
+*.bak
+*.orig
+
+# =====================================================
+# NODE / JAVASCRIPT / REACT / REACT NATIVE
+# =====================================================
+node_modules/
+dist/
+build/
+.next/
+out/
+.cache/
+.eslintcache
+
+# React Native
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+
+ios/Pods/
+ios/build/
+ios/DerivedData/
+*.xcworkspace
+
+# Metro bundler
+.expo/
+.expo-shared/
+
+# =====================================================
+# PYTHON
+# =====================================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# =====================================================
+# PHP / COMPOSER
+# =====================================================
+vendor/
+composer.lock  # (optional: remove this line if you want to commit lock file)
+
+# Laravel / PHP frameworks
+/storage/*.key
+/storage/logs/
+bootstrap/cache/
+
+# =====================================================
+# DATABASE / LOCAL FILES
+# =====================================================
+*.sqlite
+*.db
+
+# =====================================================
+# DOCKER
+# =====================================================
+docker-compose.override.yml
+
+# =====================================================
+# TEST / COVERAGE
+# =====================================================
+coverage/
+reports/
+*.lcov
+
+# =====================================================
+# JAVA / JVM (if needed later)
+# =====================================================
+target/
+*.class
+*.jar
+*.war
+
+# =====================================================
+# MISC
+# =====================================================
+*.pid
+*.seed
+
+# =====================================================
+# GIT
+# =====================================================
+*.orig
+
+# =====================================================
+# PROJECT-SPECIFIC
+# =====================================================
+#database file in the config folder
+config/database.php
+
+#main composer dependencies
+vendor/

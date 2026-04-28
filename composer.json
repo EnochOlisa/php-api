@@ -1,0 +1,9 @@
+{
+    "require": {
+        "zircote/swagger-php": "^6.1"
+    }, "autoload": {
+    "psr-4": {
+        "Docs\\": "docs/"
+    }
+    }
+}
