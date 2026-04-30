@@ -48,18 +48,15 @@ if (
     $result = $user->create();
 
     if ($result === true) {
-        // Case 1: Success
-        http_response_code(201); // Created
+        http_response_code(201);
         echo json_encode(["message" => "User was created successfully."]);
 
     } elseif ($result === 'exists') {
-        // Case 2: Email already in database
-        http_response_code(409); // Conflict
+        http_response_code(409);
         echo json_encode(["message" => "Unable to create user. Email already exists."]);
 
     } else {
-        // Case 3: Something else went wrong (Connection/SQL error)
-        http_response_code(503); // Service Unavailable
+        http_response_code(503);
         echo json_encode(["message" => "Unable to create user. Service is currently unavailable."]);
     }
 }
