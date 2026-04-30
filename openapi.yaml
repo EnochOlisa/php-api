@@ -1,18 +1,69 @@
 openapi: 3.0.0
 info:
   title: 'PHP API'
-  description: 'User management API'
+  description: 'API for User Management and Session Control (2026 Standards)'
   version: 1.0.0
 servers:
   -
     url: 'http://localhost:8000'
-    description: 'Local server'
+    description: 'Local Development Server'
 paths:
+  /v1/sessions/login.php:
+    post:
+      tags:
+        - Sessions
+      summary: 'User Login'
+      operationId: dfd64d2c4155e373117b9442fc5d3ccf
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: enoch@example.com
+                password:
+                  type: string
+                  example: StrongPassword123!
+              type: object
+      responses:
+        '200':
+          description: 'Login successful. Sets HTTP-only session cookie.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: 'Login successful.' }
+                  user: { properties: { id: { type: integer, example: 42 }, email: { type: string, example: enoch@example.com } }, type: object }
+                type: object
+        '401':
+          description: 'Invalid credentials'
+        '400':
+          description: 'Incomplete data'
+  /v1/sessions/logout.php:
+    post:
+      tags:
+        - Sessions
+      summary: 'User Logout'
+      operationId: e5534657613f60935c4d7ef730b01116
+      responses:
+        '200':
+          description: 'Session destroyed and cookie cleared.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: { type: string, example: 'Logout successful.' }
+                type: object
   /v1/users/create.php:
     post:
       tags:
         - Users
-      summary: 'Create a new user'
+      summary: 'Register a new user'
       operationId: c76edd41ebe3245a3d6aa3d83fc83a9c
       requestBody:
         required: true
@@ -27,74 +78,53 @@ paths:
               properties:
                 first_name:
                   type: string
-                  example: Enoch
                 last_name:
                   type: string
-                  example: Olisa
                 email:
                   type: string
                   format: email
-                  example: enoch@example.com
                 password:
                   type: string
                   format: password
-                  example: StrongPassword123!
                 phone:
                   type: string
-                  example: '+1 647 123 4567'
-                  nullable: true
-                address_line1:
-                  type: string
-                  example: '123 Main Street'
-                  nullable: true
-                city:
-                  type: string
-                  example: Milton
-                  nullable: true
-                province:
-                  type: string
-                  example: 'ON'
-                  nullable: true
-                postal_code:
-                  type: string
-                  example: 'K1A 0B1'
                   nullable: true
                 date_of_birth:
                   type: string
                   format: date
-                  example: '1990-05-20'
                   nullable: true
               type: object
       responses:
         '201':
-          description: 'User created successfully'
-          content:
-            application/json:
-              schema:
-                properties:
-                  message: { type: string, example: 'User was created successfully.' }
-                type: object
+          description: 'User created'
         '409':
           description: 'Email already exists'
+  /v1/users/view.php:
+    get:
+      tags:
+        - Users
+      summary: 'View active user profile'
+      description: 'Retrieves current user details from DB based on active session email.'
+      operationId: b1ea1cd9410526ebed47b637b2ad99e2
+      responses:
+        '200':
+          description: 'Authenticated profile data retrieved'
           content:
             application/json:
               schema:
                 properties:
-                  message: { type: string, example: 'Unable to create user. Email already exists.' }
+                  authenticated: { type: boolean, example: true }
+                  user: { properties: { first_name: { type: string }, last_name: { type: string }, phone: { type: string, nullable: true }, address_line1: { type: string, nullable: true }, city: { type: string, nullable: true }, province: { type: string, nullable: true }, postal_code: { type: string, nullable: true }, date_of_birth: { type: string, format: date, nullable: true } }, type: object }
                 type: object
-        '503':
-          description: 'Service unavailable'
-          content:
-            application/json:
-              schema:
-                properties:
-                  message: { type: string, example: 'Unable to create user. Service is currently unavailable.' }
-                type: object
+        '401':
+          description: 'Unauthenticated - No active session'
+        '404':
+          description: 'User record no longer exists in DB'
   /v1/users/update.php:
     put:
       tags:
         - Users
-      summary: 'Update an existing user'
+      summary: 'Update existing user'
       operationId: a79431a243204b75fd0cadcc7d9674f9
       requestBody:
         required: true
@@ -105,69 +135,45 @@ paths:
                 - email
               properties:
                 email:
+                  description: 'Must match session email'
                   type: string
-                  format: email
-                  example: enoch@example.com
                 first_name:
                   type: string
-                  example: Enoch
                   nullable: true
                 last_name:
                   type: string
-                  example: Olisa
                   nullable: true
                 phone:
                   type: string
-                  example: '+1 647 123 4567'
                   nullable: true
                 address_line1:
                   type: string
-                  example: '123 Main Street'
                   nullable: true
                 city:
                   type: string
-                  example: Milton
                   nullable: true
                 province:
                   type: string
-                  example: 'ON'
                   nullable: true
                 postal_code:
                   type: string
-                  example: 'K1A 0B1'
                   nullable: true
                 date_of_birth:
                   type: string
                   format: date
-                  example: '1990-05-20'
                   nullable: true
               type: object
       responses:
         '200':
-          description: 'User updated successfully'
-          content:
-            application/json:
-              schema:
-                properties:
-                  message: { type: string, example: 'User updated successfully.' }
-                type: object
-        '400':
-          description: 'Bad request'
-          content:
-            application/json:
-              schema:
-                properties:
-                  message: { type: string, example: 'No valid updateable fields were provided.' }
-                type: object
-        '404':
-          description: 'User does not exist'
-          content:
-            application/json:
-              schema:
-                properties:
-                  message: { type: string, example: 'User does not exist.' }
-                type: object
+          description: 'Profile updated successfully'
+        '401':
+          description: 'Not logged in'
+        '403':
+          description: 'Forbidden - Email mismatch with session'
 tags:
+  -
+    name: Sessions
+    description: Sessions
   -
     name: Users
     description: Users
