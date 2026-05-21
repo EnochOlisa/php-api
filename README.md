@@ -5,16 +5,16 @@ A repo with different resources, all built with PHP.
 This repository contains various PHP resources, including APIs, libraries, and tools.
 
 ## Resources
-- **Users**: Has 3 endpoints; create.php, view.php, and update.php. 
+### Users: Has 3 endpoints; create.php, view.php, and update.php. 
 - The create.php endpoint allows a user create a profile.
 - The view.php endpoint allows the user to view their profile information.
 - The update.php endpoint allows the user to update their information, such as their name and password.
 
-- **Sessions**: Has 2 endpoints; login.php and logout.php.
+### Sessions: Has 2 endpoints; login.php and logout.php.
 - The login.php endpoint allows a user to log in to their account.
 - The logout.php endpoint allows a user to log out of their account.
 
-- **Products**: Has 4 endpoints; add.php, view.php, update.php, and delete.php.
+### Products: Has 4 endpoints; add.php, view.php, update.php, and delete.php.
 - The add.php endpoint allows an admin to add a product to the inventory.
 - The view.php endpoint allows users to view the products available in the inventory.
 - The update.php endpoint allows an admin to update the product information, such as price and description. Also, when a user makes an order or does a refund, this endpoint is called.
