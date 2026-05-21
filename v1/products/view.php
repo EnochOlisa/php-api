@@ -10,14 +10,14 @@ include_once '../../config/database.php';
 include_once '../../objects/product.php';
 
 try {
-    // 3. Dependency Object Injection Setup
+    // Dependency Object Injection Setup
     $database = new Database();
     $db = $database->getConnection();
     $product = new Product($db);
 
     $isFound = false;
 
-    // 4. Adaptive Parameter Strategy and Validation
+    // Adaptive Parameter Strategy and Validation
 
     // Scenario A: Lookup by Internal Primary Key Database ID (e.g., view.php?id=42)
     if (isset($_GET['id']) && $_GET['id'] !== '') {
@@ -61,7 +61,7 @@ try {
         exit();
     }
 
-    // 5. Resource State Serialization Outbound Contract
+    // Resource State Serialization Outbound Contract
     if ($isFound) {
         $product_arr = [
             "id" => (int)$product->id,
