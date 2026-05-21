@@ -14,6 +14,12 @@ This repository contains various PHP resources, including APIs, libraries, and t
 - The login.php endpoint allows a user to log in to their account.
 - The logout.php endpoint allows a user to log out of their account.
 
+- **Products**: Has 4 endpoints; add.php, view.php, update.php, and delete.php.
+- The add.php endpoint allows an admin to add a product to the inventory.
+- The view.php endpoint allows users to view the products available in the inventory.
+- The update.php endpoint allows an admin to update the product information, such as price and description. Also, when a user makes an order or does a refund, this endpoint is called.
+- The delete.php endpoint allows an admin to remove a product from the inventory.
+
 ## Swagger/OpenAPI documentation 
 - Clone the repository.
 - Set up the project, configure the database connection, server, and ensure that all dependencies are installed.

@@ -18,7 +18,7 @@ class User {
     public $registration_date;
     public $date_of_birth;
 
-    // Constructor to receive the database connection when in
+    // Constructor to receive the database connection
     public function __construct($db) {
         $this->conn = $db;
     }
@@ -80,7 +80,7 @@ class User {
         $stmt->bindParam(":date_of_birth", $this->date_of_birth);
         $stmt->bindParam(":registration_date", $this->registration_date);
 
-        // Execute the query
+        // Execute the query and return true if successful
         try {
             if($stmt->execute()) {
                 return true;
@@ -113,24 +113,22 @@ class User {
         if($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $this->id = $row['id'];
-            // ... (rest of your logic)
             return true;
         }
         return false;
     }
 
-// Method to update user data (excluding immutable fields)
+    // Method to update user data (excluding immutable fields)
     public function update($fields) {
-        // 1. Define allowed updateable fields (Immutable fields like email/id are excluded)
+        // Define allowed updateable fields (Immutable fields like email/id are excluded)
         $allowedFields = [
             'first_name', 'last_name', 'phone', 'address_line1',
             'city', 'province', 'postal_code', 'date_of_birth'
         ];
-
         $updateParts = [];
         $params = [];
 
-        // 2. Loop through the JSON data and build the query dynamically
+        // Loop through the JSON data and build the query dynamically
         foreach ($fields as $key => $value) {
             if (in_array($key, $allowedFields)) {
                 $updateParts[] = "{$key} = :{$key}";
@@ -143,12 +141,12 @@ class User {
             return false;
         }
 
-        // 3. Build the final SQL statement
+        // Build the final SQL statement
         $sql = "UPDATE " . $this->table_name . " SET " . implode(', ', $updateParts) . " WHERE email = :email";
 
         $stmt = $this->conn->prepare($sql);
 
-        // 4. Bind the identification email and the dynamic parameters
+        // Bind the identification email and the dynamic parameters
         $stmt->bindValue(':email', $this->email);
         foreach ($params as $key => $val) {
             $stmt->bindValue($key, $val);
