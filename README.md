@@ -1,4 +1,4 @@
-# php-api
+# PHP-API
 A repo with different resources, all built with PHP.
 
 ## Description
@@ -27,7 +27,7 @@ This repository contains various PHP resources, including APIs, libraries, and t
 - The update.php endpoint allows a user to update the quantity of a product in their cart.
 - The remove.php endpoint allows a user to remove a product from their cart.
 
-## Swagger/OpenAPI documentation 
+## Swagger/OpenAPI: For documentation and testing of the API endpoints.
 - Clone the repository.
 - Set up the project, configure the database connection, server, and ensure that all dependencies are installed.
 - Navigate to the project directory and run the following command to generate the Swagger documentation:
