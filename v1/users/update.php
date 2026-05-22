@@ -13,7 +13,7 @@ include_once '../../config/session_config.php';
 start_secure_session();
 
 // Check if the user is authenticated before allowing profile updates
-if(!isset($_SESSION['user_id'])) {
+if(!isset($_SESSION['id'])) {
     http_response_code(401);
     echo json_encode(["message" => "Access denied. Please log in to update your profile."]);
     exit;

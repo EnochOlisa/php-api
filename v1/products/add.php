@@ -8,10 +8,26 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 // Include necessary files using the established directory structure
 include_once '../../config/database.php';
 include_once '../../objects/product.php';
+include_once '../../config/session_config.php';
 
+// Include session configuration and start a secure session
+start_secure_session();
+
+// Check if an authentication state exists at all
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401); // Unauthorized
+    echo json_encode(["message" => "Authentication required."]);
+    exit();
+}
+
+//Validate the server-side state for authorization
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    http_response_code(403); // Forbidden
+    echo json_encode(["message" => "Access denied. Administrator privileges required."]);
+    exit();
+}
 
 // Initialize database and Product object, wrapped in a try-catch for error handling
-
 $database = new Database();
 $db = $database->getConnection();
 $product = new Product($db);

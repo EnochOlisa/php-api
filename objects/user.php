@@ -17,6 +17,7 @@ class User {
     public $password;
     public $registration_date;
     public $date_of_birth;
+    public $role;
 
     // Constructor to receive the database connection
     public function __construct($db) {
@@ -100,7 +101,7 @@ class User {
     // Check if email exists to verify user existence
     public function emailExists() {
         // Corrected PostgreSQL query
-        $query = "SELECT id, first_name, last_name, password 
+        $query = "SELECT id, first_name, last_name, password, role 
               FROM " . $this->table_name . " 
               WHERE email = ? 
               LIMIT 1"; // Simpler and valid for PostgreSQL
@@ -113,6 +114,8 @@ class User {
         if($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $this->id = $row['id'];
+            $this->password = $row['password'];
+            $this->role = $row['role'];
             return true;
         }
         return false;
@@ -142,9 +145,9 @@ class User {
         }
 
         // Build the final SQL statement
-        $sql = "UPDATE " . $this->table_name . " SET " . implode(', ', $updateParts) . " WHERE email = :email";
+        $query = "UPDATE " . $this->table_name . " SET " . implode(', ', $updateParts) . " WHERE email = :email";
 
-        $stmt = $this->conn->prepare($sql);
+        $stmt = $this->conn->prepare($query);
 
         // Bind the identification email and the dynamic parameters
         $stmt->bindValue(':email', $this->email);

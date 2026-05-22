@@ -29,13 +29,15 @@ if (!empty($data->email) && !empty($data->password)) {
 
         $_SESSION['user_id'] = $user->id;
         $_SESSION['email'] = $user->email;
+        $_SESSION['role'] = $user->role; // Assuming role is fetched in emailExists()
 
         http_response_code(200);
         echo json_encode([
             "message" => "Login successful.",
             "user" => [
                 "id" => $user->id,
-                "email" => $user->email
+                "email" => $user->email,
+                "role" => $user->role
             ]
         ]);
     } else {

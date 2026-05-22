@@ -8,6 +8,17 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 // Include necessary files using the established directory structure
 include_once '../../config/database.php';
 include_once '../../objects/product.php';
+include_once '../../config/session_config.php';
+
+// Include session configuration and start a secure session
+start_secure_session();
+
+// Check if the user is authenticated before allowing profile updates
+if(!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(["message" => "Access denied. Please log in to view this product."]);
+    exit;
+}
 
 try {
     // Dependency Object Injection Setup
