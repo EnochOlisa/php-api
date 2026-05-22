@@ -1,5 +1,5 @@
 <?php
-//Session Configuration. Will be included at the very top of your entry points.
+//Session Configuration. This will be included at the very top of your entry points.
 
 // Force strict session security settings in the PHP ini
 ini_set('session.use_only_cookies', 1); // Prevents session ID passing in URLs

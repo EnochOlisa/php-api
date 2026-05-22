@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
   title: 'PHP API'
-  description: 'API for User Management and Session Control (2026 Standards)'
-  version: 1.0.0
+  description: 'API for User Management, Session Control, Products, and Shopping Cart operations.'
+  version: 1.1.0
 servers:
   -
     url: 'http://localhost:8000'
@@ -12,164 +12,833 @@ paths:
     post:
       tags:
         - Sessions
-      summary: 'User Login'
+      summary: 'User login'
+      description: 'Authenticates a user and creates an HTTP-only session cookie.'
       operationId: dfd64d2c4155e373117b9442fc5d3ccf
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              required:
-                - email
-                - password
-              properties:
-                email:
-                  type: string
-                  example: enoch@example.com
-                password:
-                  type: string
-                  example: StrongPassword123!
-              type: object
+              $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: 'Login successful. Sets HTTP-only session cookie.'
+          description: 'Login successful. Session cookie is set.'
           content:
             application/json:
               schema:
-                properties:
-                  message: { type: string, example: 'Login successful.' }
-                  user: { properties: { id: { type: integer, example: 42 }, email: { type: string, example: enoch@example.com } }, type: object }
-                type: object
-        '401':
-          description: 'Invalid credentials'
+                $ref: '#/components/schemas/LoginResponse'
         '400':
-          description: 'Incomplete data'
+          description: 'Incomplete data.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: 'Invalid credentials.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
   /v1/sessions/logout.php:
     post:
       tags:
         - Sessions
-      summary: 'User Logout'
+      summary: 'User logout'
+      description: 'Destroys the active session and clears the session cookie.'
       operationId: e5534657613f60935c4d7ef730b01116
       responses:
         '200':
-          description: 'Session destroyed and cookie cleared.'
+          description: 'Logout successful.'
           content:
             application/json:
               schema:
-                properties:
-                  message: { type: string, example: 'Logout successful.' }
-                type: object
+                $ref: '#/components/schemas/ApiMessageResponse'
+      security:
+        -
+          SessionCookieAuth: []
   /v1/users/create.php:
     post:
       tags:
         - Users
       summary: 'Register a new user'
+      description: 'Creates a new user profile.'
       operationId: c76edd41ebe3245a3d6aa3d83fc83a9c
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              required:
-                - first_name
-                - last_name
-                - email
-                - password
-              properties:
-                first_name:
-                  type: string
-                last_name:
-                  type: string
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-                  format: password
-                phone:
-                  type: string
-                  nullable: true
-                date_of_birth:
-                  type: string
-                  format: date
-                  nullable: true
-              type: object
+              $ref: '#/components/schemas/UserCreateRequest'
       responses:
         '201':
-          description: 'User created'
+          description: 'User created.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMessageResponse'
+        '400':
+          description: 'Invalid or incomplete request data.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
         '409':
-          description: 'Email already exists'
+          description: 'Email already exists.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
   /v1/users/view.php:
     get:
       tags:
         - Users
       summary: 'View active user profile'
-      description: 'Retrieves current user details from DB based on active session email.'
+      description: 'Retrieves current user details from the database based on the active session.'
       operationId: b1ea1cd9410526ebed47b637b2ad99e2
       responses:
         '200':
-          description: 'Authenticated profile data retrieved'
+          description: 'Authenticated profile data retrieved.'
           content:
             application/json:
               schema:
-                properties:
-                  authenticated: { type: boolean, example: true }
-                  user: { properties: { first_name: { type: string }, last_name: { type: string }, phone: { type: string, nullable: true }, address_line1: { type: string, nullable: true }, city: { type: string, nullable: true }, province: { type: string, nullable: true }, postal_code: { type: string, nullable: true }, date_of_birth: { type: string, format: date, nullable: true } }, type: object }
-                type: object
+                $ref: '#/components/schemas/UserProfileResponse'
         '401':
-          description: 'Unauthenticated - No active session'
+          description: 'Unauthenticated. No active session.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
         '404':
-          description: 'User record no longer exists in DB'
+          description: 'User record no longer exists.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      security:
+        -
+          SessionCookieAuth: []
   /v1/users/update.php:
     put:
       tags:
         - Users
       summary: 'Update existing user'
+      description: 'Updates profile fields for the authenticated user.'
       operationId: a79431a243204b75fd0cadcc7d9674f9
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              required:
-                - email
-              properties:
-                email:
-                  description: 'Must match session email'
-                  type: string
-                first_name:
-                  type: string
-                  nullable: true
-                last_name:
-                  type: string
-                  nullable: true
-                phone:
-                  type: string
-                  nullable: true
-                address_line1:
-                  type: string
-                  nullable: true
-                city:
-                  type: string
-                  nullable: true
-                province:
-                  type: string
-                  nullable: true
-                postal_code:
-                  type: string
-                  nullable: true
-                date_of_birth:
-                  type: string
-                  format: date
-                  nullable: true
-              type: object
+              $ref: '#/components/schemas/UserUpdateRequest'
       responses:
         '200':
-          description: 'Profile updated successfully'
+          description: 'Profile updated successfully.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMessageResponse'
+        '400':
+          description: 'Invalid request data.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
         '401':
-          description: 'Not logged in'
+          description: 'Not logged in.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
         '403':
-          description: 'Forbidden - Email mismatch with session'
+          description: 'Forbidden. Email mismatch with session.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      security:
+        -
+          SessionCookieAuth: []
+  /v1/products/add.php:
+    post:
+      tags:
+        - Products
+      summary: 'Add a product'
+      description: 'Adds a new product to the inventory. Intended for administrative inventory management.'
+      operationId: 9ab42edbc4d19512392bb29fccff76b5
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateRequest'
+      responses:
+        '201':
+          description: 'Product created.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMessageResponse'
+        '400':
+          description: 'Invalid or incomplete product data.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: 'Authentication required.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: 'Administrative access required.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: 'Product SKU already exists.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      security:
+        -
+          SessionCookieAuth: []
+  /v1/products/view.php:
+    get:
+      tags:
+        - Products
+      summary: 'View products'
+      description: 'Retrieves products available in the inventory.'
+      operationId: c8715cc051ce204aa6f7f2f30766af65
+      parameters:
+        -
+          name: id
+          in: query
+          description: 'Optional product ID filter.'
+          required: false
+          schema:
+            type: integer
+        -
+          name: sku
+          in: query
+          description: 'Optional SKU filter.'
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Products retrieved.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+        '404':
+          description: 'No products found.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/products/update.php:
+    put:
+      tags:
+        - Products
+      summary: 'Update a product'
+      description: 'Updates product information such as price, description, or inventory quantity.'
+      operationId: 6fbdc8b54369e822b0b0d85372730239
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdateRequest'
+      responses:
+        '200':
+          description: 'Product updated.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMessageResponse'
+        '400':
+          description: 'Invalid request data.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: 'Authentication required.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: 'Administrative access required.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: 'Product not found.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      security:
+        -
+          SessionCookieAuth: []
+  /v1/products/delete.php:
+    delete:
+      tags:
+        - Products
+      summary: 'Delete a product'
+      description: 'Removes a product from the inventory.'
+      operationId: 1cbd99cefef543a344139cd4e4aff9fd
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductDeleteRequest'
+      responses:
+        '200':
+          description: 'Product deleted.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMessageResponse'
+        '400':
+          description: 'Invalid request data.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: 'Authentication required.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: 'Administrative access required.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: 'Product not found.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      security:
+        -
+          SessionCookieAuth: []
+  /v1/cart/view.php:
+    get:
+      tags:
+        - Cart
+      summary: 'View active shopping cart'
+      description: "Retrieves the authenticated user's active cart items and calculated grand total."
+      operationId: 547b5b3170ebc4334772a5acaf8ec42e
+      responses:
+        '200':
+          description: 'Cart retrieved.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartViewResponse'
+        '401':
+          description: 'Access denied. Login is required to view cart items.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: 'Internal server error while retrieving cart data.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      security:
+        -
+          SessionCookieAuth: []
+  /v1/cart/add.php:
+    post:
+      tags:
+        - Cart
+      summary: 'Add item to shopping cart'
+      description: 'Appends an item amount to the active cart. Increments quantity sequentially if the item already exists.'
+      operationId: 2bf18f653b00f090587d35158ac03a0a
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartMutationRequest'
+      responses:
+        '201':
+          description: 'Product entry appended successfully.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMessageResponse'
+        '400':
+          description: 'Invalid request payload layout.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: 'Access denied. Login required.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: 'Product ID not found in system catalog.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '422':
+          description: 'Unprocessable volume requests exceeding stock volumes.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: 'Internal database handshake failure.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      security:
+        -
+          SessionCookieAuth: []
+  /v1/cart/update.php:
+    patch:
+      tags:
+        - Cart
+      summary: 'Update cart item volume'
+      description: "Modifies the explicit total volume of an item already located within the customer's active cart container."
+      operationId: d3647c8a4412ea322c6eb3f7aca5ceea
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartMutationRequest'
+      responses:
+        '200':
+          description: 'Item quantities updated successfully.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMessageResponse'
+        '400':
+          description: 'Invalid structural formats passed up.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: 'Access denied. Login required.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: 'Target item product combination does not exist inside your active session footprint.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '422':
+          description: 'Modified parameters exceed warehouse inventory.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: 'Internal data storage engine exception error.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      security:
+        -
+          SessionCookieAuth: []
+  /v1/cart/remove.php:
+    delete:
+      tags:
+        - Cart
+      summary: 'Purge product asset from active cart container'
+      description: "Completely destroys a item line row out of the user's shopping cart space using target query boundaries."
+      operationId: b00a2711ac430e66fcc0d2e286af2fc6
+      parameters:
+        -
+          name: product_id
+          in: query
+          description: 'Numeric product identifier primary key.'
+          required: true
+          schema:
+            type: integer
+            example: 1001
+      responses:
+        '200':
+          description: 'Line item wiped cleanly.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMessageResponse'
+        '400':
+          description: 'Bad Request: Parameter missing or invalid formatting types passed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: 'Access denied. Authentication mandatory.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: 'Resource not found within your active cart footprint mapping layers.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: 'Internal database query processing error.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      security:
+        -
+          SessionCookieAuth: []
+components:
+  schemas:
+    ApiMessageResponse:
+      properties:
+        message:
+          type: string
+          example: 'Operation completed successfully.'
+      type: object
+    ApiErrorResponse:
+      properties:
+        message:
+          type: string
+          example: 'Request could not be completed.'
+      type: object
+    SessionUser:
+      properties:
+        id:
+          type: integer
+          example: 42
+        email:
+          type: string
+          format: email
+          example: '<USER_EMAIL>'
+      type: object
+    LoginRequest:
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: '<USER_EMAIL>'
+        password:
+          type: string
+          format: password
+          example: '<PASSWORD>'
+      type: object
+    LoginResponse:
+      properties:
+        message:
+          type: string
+          example: 'Login successful.'
+        user:
+          $ref: '#/components/schemas/SessionUser'
+      type: object
+    UserCreateRequest:
+      required:
+        - first_name
+        - last_name
+        - email
+        - password
+      properties:
+        first_name:
+          type: string
+          example: First
+        last_name:
+          type: string
+          example: Last
+        email:
+          type: string
+          format: email
+          example: '<USER_EMAIL>'
+        password:
+          type: string
+          format: password
+          example: '<PASSWORD>'
+        phone:
+          type: string
+          example: '<PHONE_NUMBER>'
+          nullable: true
+        date_of_birth:
+          type: string
+          format: date
+          example: '2000-01-01'
+          nullable: true
+      type: object
+    UserProfile:
+      properties:
+        first_name:
+          type: string
+          example: First
+        last_name:
+          type: string
+          example: Last
+        phone:
+          type: string
+          example: '<PHONE_NUMBER>'
+          nullable: true
+        address_line1:
+          type: string
+          example: '<ADDRESS_LINE_1>'
+          nullable: true
+        city:
+          type: string
+          example: City
+          nullable: true
+        province:
+          type: string
+          example: Province
+          nullable: true
+        postal_code:
+          type: string
+          example: '<POSTAL_CODE>'
+          nullable: true
+        date_of_birth:
+          type: string
+          format: date
+          example: '2000-01-01'
+          nullable: true
+      type: object
+    UserProfileResponse:
+      properties:
+        authenticated:
+          type: boolean
+          example: true
+        user:
+          $ref: '#/components/schemas/UserProfile'
+      type: object
+    UserUpdateRequest:
+      required:
+        - email
+      properties:
+        email:
+          description: 'Must match the authenticated session email.'
+          type: string
+          format: email
+          example: '<USER_EMAIL>'
+        first_name:
+          type: string
+          example: First
+          nullable: true
+        last_name:
+          type: string
+          example: Last
+          nullable: true
+        phone:
+          type: string
+          example: '<PHONE_NUMBER>'
+          nullable: true
+        address_line1:
+          type: string
+          example: '<ADDRESS_LINE_1>'
+          nullable: true
+        city:
+          type: string
+          example: City
+          nullable: true
+        province:
+          type: string
+          example: Province
+          nullable: true
+        postal_code:
+          type: string
+          example: '<POSTAL_CODE>'
+          nullable: true
+        date_of_birth:
+          type: string
+          format: date
+          example: '2000-01-01'
+          nullable: true
+      type: object
+    Product:
+      properties:
+        id:
+          type: integer
+          example: 1001
+        name:
+          type: string
+          example: 'Product Name'
+        sku:
+          type: string
+          example: SKU-001
+        description:
+          type: string
+          example: 'Product description.'
+          nullable: true
+        price:
+          type: number
+          format: float
+          example: 19.99
+        quantity:
+          type: integer
+          example: 25
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+      type: object
+    ProductCreateRequest:
+      required:
+        - name
+        - sku
+        - price
+        - quantity
+      properties:
+        name:
+          type: string
+          example: 'Product Name'
+        sku:
+          type: string
+          example: SKU-001
+        description:
+          type: string
+          example: 'Product description.'
+          nullable: true
+        price:
+          type: number
+          format: float
+          example: 19.99
+        quantity:
+          type: integer
+          example: 25
+      type: object
+    ProductUpdateRequest:
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          example: 1001
+        name:
+          type: string
+          example: 'Updated Product Name'
+          nullable: true
+        sku:
+          type: string
+          example: SKU-001
+          nullable: true
+        description:
+          type: string
+          example: 'Updated product description.'
+          nullable: true
+        price:
+          type: number
+          format: float
+          example: 24.99
+          nullable: true
+        quantity:
+          type: integer
+          example: 20
+          nullable: true
+      type: object
+    ProductDeleteRequest:
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          example: 1001
+      type: object
+    ProductListResponse:
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+      type: object
+    CartItem:
+      properties:
+        product_id:
+          type: integer
+          example: 1001
+        name:
+          type: string
+          example: 'Product Name'
+        sku:
+          type: string
+          example: SKU-001
+        price:
+          type: number
+          format: float
+          example: 19.99
+        quantity:
+          type: integer
+          example: 2
+        subtotal:
+          type: number
+          format: float
+          example: 39.98
+      type: object
+    CartMutationRequest:
+      required:
+        - product_id
+        - quantity
+      properties:
+        product_id:
+          description: 'Target product identifier to add or adjust.'
+          type: integer
+          example: 1001
+        quantity:
+          description: 'Quantity requested.'
+          type: integer
+          example: 2
+      type: object
+    CartViewResponse:
+      properties:
+        cart_id:
+          type: integer
+          example: 5001
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        grand_total:
+          type: number
+          format: float
+          example: 39.98
+      type: object
+  securitySchemes:
+    SessionCookieAuth:
+      type: apiKey
+      description: 'HTTP-only session cookie created after login.'
+      name: PHPSESSID
+      in: cookie
 tags:
   -
     name: Sessions
@@ -177,3 +846,9 @@ tags:
   -
     name: Users
     description: Users
+  -
+    name: Products
+    description: Products
+  -
+    name: Cart
+    description: Cart

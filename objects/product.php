@@ -71,8 +71,8 @@ class Product {
             if ($exception->getCode() == '23505') {
                 return 'exists';
             }
-            // Log other system background errors anonymously
-            error_log("Database Error inside create(): " . $exception->getMessage());
+            // Log other errors
+            error_log("Database Error: " . $exception->getMessage());
             return false;
         }
         return false;
@@ -124,7 +124,7 @@ class Product {
 
         $stmt = $this->conn->prepare($query);
 
-        // Sanitize string to eliminate threat factors before binding
+        // Sanitize string before binding
         $this->sku = htmlspecialchars(strip_tags($this->sku));
         $stmt->bindParam(1, $this->sku, PDO::PARAM_STR);
 
@@ -148,7 +148,7 @@ class Product {
 
     // Dynamic update to product details with input validation and sanitization
     public function update($data) {
-        // Whitelist array prevents parameter pollution/mass-assignment attacks
+        // Define allowed updateable fields
         $allowedFields = ['sku', 'name', 'description', 'price', 'stock_level', 'image_url'];
         $fieldsToUpdate = [];
         $bindings = [];
@@ -203,14 +203,16 @@ class Product {
                 return true;
             }
         } catch (PDOException $e) {
-            error_log("Database Error inside update(): " . $e->getMessage());
+            error_log("Database Error: " . $e->getMessage());
             return false;
         }
         return false;
     }
 
-    // Delete Product from table
+    // Delete product from table
     public function delete() {
+
+        // SQL query to delete a product by ID
         $query = "DELETE FROM " . $this->table_name . " WHERE id = ?";
 
         $this->id = filter_var($this->id, FILTER_VALIDATE_INT);
@@ -226,7 +228,7 @@ class Product {
                 return true;
             }
         } catch (PDOException $e) {
-            error_log("Database Error inside delete(): " . $e->getMessage());
+            error_log("Database Error: " . $e->getMessage());
             return false;
         }
         return false;
